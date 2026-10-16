@@ -31,8 +31,11 @@ jobs:
     - name: Check migrations
       run: python manage.py makemigrations --check --dry-run
 
+    - name: Build static assets
+      run: python manage.py collectstatic --noinput
+
     - name: Run tests
       run: python manage.py test stories.tests
 
-    - name: Test static collection
-      run: python manage.py collectstatic --noinput
+    - name: Check frontend JavaScript
+      run: node --check static/js/site.js
