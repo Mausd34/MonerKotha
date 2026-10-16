@@ -20,9 +20,13 @@ services:
           name: monerkotha-ratelimits
           property: connectionString
       - key: ALLOWED_HOSTS
-        value: monerkotha.onrender.com
+        value: .onrender.com
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://*.onrender.com
       - key: SECURE_SSL_REDIRECT
         value: "True"
+      - key: PYTHON_VERSION
+        value: 3.12.8
   - type: keyvalue
     name: monerkotha-ratelimits
     plan: free
