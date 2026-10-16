@@ -1,4 +1,6 @@
-cd D:\MonerKotha# মনেরকথা — MonerKotha
+# মনেরকথা — MonerKotha
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Mausd34/MonerKotha)
 
 বাংলা-প্রথম, মোবাইল-প্রথম, নামহীন অনুভূতি ও গল্প ভাগ করে নেওয়ার একটি মডারেশন-সহ Django প্ল্যাটফর্ম।
 
