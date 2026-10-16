@@ -11,7 +11,8 @@ from .models import ModerationLog, Story
 
 def visitor_hash(request):
     """Derive a daily pseudonym without persisting the raw address."""
-    address = request.META.get("REMOTE_ADDR", "")
+    forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
+    address = forwarded_for.split(",", 1)[0].strip() if forwarded_for else request.META.get("REMOTE_ADDR", "")
     if not address:
         return ""
     secret = settings.SECRET_KEY.encode("utf-8")

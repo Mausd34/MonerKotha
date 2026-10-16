@@ -9,7 +9,7 @@ from django.test import RequestFactory, TestCase
 from django.utils import timezone
 
 from stories.models import Category, ModerationLog, Story
-from stories.services import allow_request, contains_contact_details, moderate_story
+from stories.services import allow_request, contains_contact_details, moderate_story, visitor_hash
 
 
 class RateLimitTests(TestCase):
@@ -22,6 +22,16 @@ class RateLimitTests(TestCase):
         self.assertTrue(allow_request(self.request, "unit-test", 2, 60))
         self.assertTrue(allow_request(self.request, "unit-test", 2, 60))
         self.assertFalse(allow_request(self.request, "unit-test", 2, 60))
+
+    def test_forwarded_client_addresses_get_separate_rate_limits(self):
+        first_client = RequestFactory().get("/", HTTP_X_FORWARDED_FOR="203.0.113.20")
+        second_client = RequestFactory().get("/", HTTP_X_FORWARDED_FOR="203.0.113.21")
+        first_client.META["REMOTE_ADDR"] = "127.0.0.1"
+        second_client.META["REMOTE_ADDR"] = "127.0.0.1"
+
+        self.assertNotEqual(visitor_hash(first_client), visitor_hash(second_client))
+        self.assertTrue(allow_request(first_client, "forwarded-test", 1, 60))
+        self.assertTrue(allow_request(second_client, "forwarded-test", 1, 60))
 
     def test_contact_data_patterns_cover_bangladesh_digits(self):
         self.assertTrue(contains_contact_details("আমার নম্বর ০১৭১২৩৪৫৬৭৮"))
