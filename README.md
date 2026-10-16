@@ -143,7 +143,7 @@ Backup encrypted, access-controlled জায়গায় রাখুন; restore 
 
 ## Deployment (উদাহরণ)
 
-Root-এর `render.yaml` একটি deploy blueprint: web service, PostgreSQL এবং shared Key Value rate-limit cache। Provider-এর বর্তমান free-tier, resource persistence, sleep/availability ও pricing আগে যাচাই করুন; free database/cache বন্ধ, expire বা data-reset হতে পারে। Free tier-কে durable production storage ধরে নেবেন না।
+Root-এর `render.yaml` Render-এর free web service, PostgreSQL এবং shared Key Value rate-limit cache deploy করার blueprint। Free web service ১৫ মিনিট নিষ্ক্রিয় থাকলে sleep করে; পরের request-এ জাগতে প্রায় এক মিনিট লাগতে পারে এবং local filesystem/database redeploy, restart বা sleep-এর সময় হারিয়ে যায়। Render-এর free PostgreSQL database তৈরির ৩০ দিন পর expire করে; চালু রাখতে upgrade দরকার, নইলে ডেটা অপ্রাপ্য হতে পারে। তাই এই free blueprint শুধু demo/hobby use-এর জন্য—বাস্তব user story-এর durable production storage হিসেবে ব্যবহার করবেন না। Deploy-এর আগে provider-এর বর্তমান free-tier limit ও pricing যাচাই করুন এবং dashboard-এ spending/payment setting পরীক্ষা করুন।
 
 Deploy-এর আগে:
 
