@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}মনের কথা লিখুন — মনেরকথা{% endblock %}
+{% block content %}
+<section class="form-page content-width">
+  <a class="back-link" href="{% url 'home' %}">← গল্পগুলোতে ফিরুন</a>
+  <div class="form-heading"><span class="eyebrow">আপনার কথা, আপনার মতো</span><h1>মনের কথা লিখুন</h1><p>নাম বা অ্যাকাউন্ট লাগবে না। আপনার গল্পটি প্রকাশের আগে একজন মডারেটর পড়বেন।</p></div>
+  {% if rate_limited %}<div class="message message-error" role="alert">এই ঘণ্টায় গল্প জমা দেওয়ার সীমা পূর্ণ হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।</div>{% endif %}
+  <form class="surface-card story-form" method="post" novalidate data-loading-form>
+    {% csrf_token %}
+    {{ form.website }}
+    {% if form.non_field_errors %}<div class="form-errors" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="field-group"><label for="{{ form.category.id_for_label }}">গল্পের বিষয়</label>{{ form.category }}<small id="category-help" class="sr-only">গল্পের জন্য একটি বিষয় বেছে নিন।</small>{% if form.category.errors %}<div id="category-errors" class="field-error" role="alert">{{ form.category.errors }}</div>{% endif %}</div>
+    <div class="field-group"><label for="{{ form.content.id_for_label }}">আপনার গল্প</label>{{ form.content }}<div class="field-meta"><small id="content-help">নাম, ফোন, ইমেইল বা পরিচয় প্রকাশ করে এমন তথ্য লিখবেন না।</small><small data-character-count>০ / ৩০০০</small></div>{% if form.content.errors %}<div id="content-errors" class="field-error" role="alert">{{ form.content.errors }}</div>{% endif %}</div>
+    <div class="safety-callout"><span aria-hidden="true">♡</span><p>কারও ব্যক্তিগত তথ্য, হুমকি, সম্মতিহীন অন্তরঙ্গ বিষয় বা যাচাইহীন ক্ষতিকর অভিযোগ দেবেন না। <a href="{% url 'guidelines' %}">নির্দেশিকা পড়ুন</a></p></div>
+    <label class="consent-control">{{ form.consent_given }}<span>{{ form.consent_given.label }}</span></label>{% if form.consent_given.errors %}<small class="field-error" role="alert">{{ form.consent_given.errors }}</small>{% endif %}
+    <button class="button button-full" type="submit">পর্যালোচনার জন্য জমা দিন <span aria-hidden="true">↗</span></button>
+    <p class="privacy-hint">জমা দিলে প্রকাশ নিশ্চিত হয় না—সব গল্পই আগে যাচাই করা হয়।</p>
+  </form>
+</section>
+{% endblock %}

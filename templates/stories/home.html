@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}মনেরকথা — মনের ভেতরের গল্পগুলো{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <span class="eyebrow"><span class="live-dot"></span> একটি নিরাপদ, নামহীন পরিসর</span>
+    <h1>কিছু কথা<br>শুধু <span>মনেই</span> থেকে যায়।</h1>
+    <p>এখানে নাম নয়, অনুভূতিই আসল পরিচয়। আপনার গল্প বলুন—কেউ হয়তো নিজের গল্পটাও খুঁজে পাবে।</p>
+    <div class="hero-actions"><a class="button" href="{% url 'submit-story' %}">মনের কথা লিখুন <span aria-hidden="true">↗</span></a><a class="text-link" href="#stories">গল্পগুলো পড়ুন <span aria-hidden="true">↓</span></a></div>
+    <div class="hero-note"><span aria-hidden="true">✳</span> কোনো নাম বা অ্যাকাউন্টের দরকার নেই</div>
+  </div>
+  <div class="hero-art" aria-hidden="true"><div class="art-orbit"></div><div class="art-card art-card-back">কখনও কি<br>কাউকে বলতে<br>চেয়েও বলা হয়নি?</div><div class="art-card art-card-front"><span>কল্পিত উদাহরণ</span><b>“কথাটা কাউকে বলতে পারিনি। এখানে লিখে একটু হালকা লাগছে।”</b><small>নামহীন একটি গল্প <i>♡</i></small></div><span class="art-spark spark-one">✳</span><span class="art-spark spark-two">✦</span></div>
+</section>
+<section class="prompt-strip content-width">
+  <div class="prompt-icon" aria-hidden="true">✎</div><div class="prompt-copy"><span class="eyebrow">আজকের ভাবনা</span><p>{% if daily_prompt %}{{ daily_prompt.prompt }}{% else %}যে কথাটা কাউকে বলা হয়নি—আজ সেটা লিখে ফেলুন।{% endif %}</p></div><a class="text-link" href="{% url 'submit-story' %}">লিখে ফেলুন <span aria-hidden="true">↗</span></a>
+</section>
+<section id="stories" class="feed-section content-width">
+  <div class="section-heading"><div><span class="eyebrow">এখানে সবাই আপন</span><h2>মনের পাতায়</h2></div><span class="section-caption">শুধু অনুমোদিত গল্পই প্রকাশিত হয়</span></div>
+  <form class="feed-tools" method="get" action="{% url 'home' %}">
+    <label class="search-box"><span aria-hidden="true">⌕</span><span class="sr-only">গল্প খুঁজুন</span><input type="search" name="q" value="{{ search_query }}" placeholder="গল্প খুঁজুন…" maxlength="100"><button type="submit">খুঁজুন</button></label>
+    {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+    <label class="sort-select"><span class="sr-only">গল্প সাজান</span><select name="sort" onchange="this.form.submit()"><option value="latest"{% if sort == "latest" %} selected{% endif %}>সাম্প্রতিক</option><option value="popular"{% if sort == "popular" %} selected{% endif %}>জনপ্রিয়</option></select></label>
+  </form>
+  <div class="category-list" aria-label="বিষয় অনুযায়ী গল্প">
+    <a class="category-chip{% if not selected_category %} is-selected{% endif %}" href="{% url 'home' %}{% if search_query or sort == 'popular' %}?{% if search_query %}q={{ search_query|urlencode }}{% endif %}{% if sort == 'popular' %}{% if search_query %}&amp;{% endif %}sort=popular{% endif %}{% endif %}">সব গল্প</a>
+    {% for category in categories %}<a class="category-chip{% if selected_category == category.slug %} is-selected{% endif %}" href="{% url 'home' %}?category={{ category.slug }}{% if search_query %}&amp;q={{ search_query|urlencode }}{% endif %}{% if sort == 'popular' %}&amp;sort=popular{% endif %}">{{ category.emoji }} {{ category.name }}</a>{% endfor %}
+  </div>
+  {% if stories %}
+  <div class="story-grid">
+    {% for story in stories %}
+    <article class="story-card">
+      <div class="story-card-top"><span class="category-tag">{{ story.category.emoji }} {{ story.category.name }}</span><span class="story-date">{{ story.created_at|date:"j F, Y" }}</span></div>
+      <a class="story-excerpt" href="{% url 'story-detail' story.public_id %}">{{ story.content|truncatechars:250 }}</a>
+      <div class="story-card-bottom"><span class="anonymous-label"><span aria-hidden="true">◉</span> নামহীন বন্ধু</span><a class="reaction-link" href="{% url 'story-detail' story.public_id %}" aria-label="গল্পে প্রতিক্রিয়া দিন"><span aria-hidden="true">♡</span> {{ story.reaction_count }}</a></div>
+    </article>
+    {% endfor %}
+  </div>
+  {% if story_page.has_other_pages %}<nav class="pagination" aria-label="গল্পের পাতা">{% if story_page.has_previous %}<a href="?{% if selected_category %}category={{ selected_category|urlencode }}&amp;{% endif %}{% if search_query %}q={{ search_query|urlencode }}&amp;{% endif %}sort={{ sort }}&amp;page={{ story_page.previous_page_number }}">← আগের পাতা</a>{% endif %}<span>{{ story_page.number }} / {{ story_page.paginator.num_pages }}</span>{% if story_page.has_next %}<a href="?{% if selected_category %}category={{ selected_category|urlencode }}&amp;{% endif %}{% if search_query %}q={{ search_query|urlencode }}&amp;{% endif %}sort={{ sort }}&amp;page={{ story_page.next_page_number }}">পরের পাতা →</a>{% endif %}</nav>{% endif %}
+  {% else %}
+  <div class="empty-state"><span aria-hidden="true">✧</span><h3>{% if search_query %}এই খোঁজে কোনো গল্প পাওয়া যায়নি{% else %}এই পাতায় এখনও কোনো গল্প নেই{% endif %}</h3><p>{% if search_query %}অন্য শব্দ দিয়ে খুঁজে দেখুন, অথবা সব গল্পে ফিরে যান।{% else %}প্রথম গল্পটি আপনার হতে পারে—মনের কথাটা লিখে ফেলুন।{% endif %}</p><a class="button button-outline" href="{% if search_query or selected_category %}{% url 'home' %}{% else %}{% url 'submit-story' %}{% endif %}">{% if search_query or selected_category %}সব গল্প দেখুন{% else %}গল্প লিখুন{% endif %}</a></div>
+  {% endif %}
+  <p class="feed-footnote">প্রতিটি গল্প প্রকাশের আগে আমাদের টিম দেখে নেয়।</p>
+</section>
+{% endblock %}

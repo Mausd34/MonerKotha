@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}কমিউনিটি অ্যানালিটিক্স — মনেরকথা{% endblock %}
+{% block content %}
+<section class="dashboard-page content-width">
+  <a class="back-link" href="{% url 'moderation' %}">← মডারেশন ডেস্ক</a>
+  <span class="eyebrow">কমিউনিটি অ্যানালিটিক্স</span>
+  <h1>সংখ্যায় মনেরকথা</h1>
+  <div class="stats-grid">
+    <article class="stat-card"><span>প্রকাশিত গল্প</span><b>{{ total_approved }}</b></article>
+    <article class="stat-card"><span>পর্যালোচনায়</span><b>{{ pending_count }}</b></article>
+    <article class="stat-card"><span>খোলা রিপোর্ট</span><b>{{ reports_open }}</b></article>
+    <article class="stat-card"><span>আজকের জমা</span><b>{{ stories_today }}</b></article>
+  </div>
+  <h2>শেষ ৩০ দিনের জমা</h2>
+  <div class="surface-card analytics-list">{% for day in daily_counts %}<div><span>{{ day.day }}</span><span>{{ day.count }}টি গল্প</span></div>{% empty %}<p>এখনও কোনো গল্প জমা হয়নি।</p>{% endfor %}</div>
+  <h2>বার্ষিক পর্যালোচনার অপেক্ষায় <span class="count-pill">{{ stories_for_review }}</span></h2>
+  {% for story in stale_stories %}
+  <article class="moderation-card surface-card">
+    <div class="story-card-top"><span class="category-tag">{{ story.category.emoji }} {{ story.category.name }}</span><span class="story-date">{{ story.created_at|date:"j F, Y" }}</span></div>
+    <p>{{ story.content|truncatechars:240 }}</p>
+    <form class="moderation-controls" method="post" action="{% url 'moderate' story.public_id %}">
+      {% csrf_token %}
+      <input type="text" name="note" maxlength="500" placeholder="ঐচ্ছিক মডারেশন নোট">
+      <button class="button button-small button-muted" name="action" value="remove">পুনঃপর্যালোচনায় সরান ও মুছুন</button>
+    </form>
+  </article>
+  {% empty %}<p class="muted-copy">এখন কোনো প্রকাশিত গল্প বার্ষিক পর্যালোচনার জন্য বাকি নেই।</p>{% endfor %}
+  <p class="muted-copy">এখানে কেবল সামগ্রিক পরিসংখ্যান দেখানো হয়; পাঠক বা অবদানকারীর প্রোফাইল তৈরি করা হয় না।</p>
+</section>
+{% endblock %}

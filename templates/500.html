@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}একটু সমস্যা হয়েছে — মনেরকথা{% endblock %}
+{% block content %}<section class="error-page content-width"><span class="error-mark">✳</span><span class="eyebrow">একটু বিরতি নিচ্ছি</span><h1>এই মুহূর্তে পাতাটি দেখানো যাচ্ছে না।</h1><p>আপনার লেখা হারায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।</p><a class="button" href="{% url 'home' %}">হোমে ফিরে যান</a></section>{% endblock %}

@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}যোগাযোগ — মনেরকথা{% endblock %}
+{% block content %}<section class="prose-page content-width"><span class="eyebrow">যোগাযোগ</span><h1>আমরা শুনছি।</h1><p class="lead">নিরাপত্তা, গোপনীয়তা, প্রবেশগম্যতা বা কনটেন্ট নিয়ে কোনো প্রশ্ন বা উদ্বেগ থাকলে আমাদের জানান।</p>{% if support_email %}<p>ইমেইল করুন: <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>{% else %}<p>এই ইনস্টলেশনের অপারেটর এখনও যোগাযোগের ঠিকানা প্রকাশ করেননি। প্রকাশের আগে <code>SUPPORT_EMAIL</code> কনফিগার করতে হবে।</p>{% endif %}<p>জরুরি বিপদে স্থানীয় জরুরি সেবা বা বিশ্বস্ত সহায়তা-ব্যবস্থার সঙ্গে যোগাযোগ করুন।</p></section>{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ story.category.name }} — মনেরকথা{% endblock %}
+{% block meta_description %}{{ story.content|truncatechars:160 }}{% endblock %}
+{% block social_meta %}<meta property="og:type" content="article"><meta property="og:title" content="মনেরকথা — {{ story.category.name }}"><meta property="og:description" content="{{ story.content|truncatechars:200 }}"><meta property="og:url" content="{{ request.build_absolute_uri }}"><meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% url 'share-card' story.public_id %}"><meta name="twitter:card" content="summary_large_image">{% endblock %}
+{% block content %}
+<section class="detail-page content-width">
+  <a class="back-link" href="{% url 'home' %}">← সব গল্প</a>
+  <article class="detail-card surface-card">
+    <div class="story-card-top"><span class="category-tag">{{ story.category.emoji }} {{ story.category.name }}</span><span class="story-date">{{ story.created_at|date:"j F, Y" }}</span></div>
+    <div class="detail-content">{{ story.content|linebreaksbr }}</div>
+    <div class="detail-author"><span class="avatar-mark" aria-hidden="true">ম</span><span><b>নামহীন বন্ধু</b><small>পরিচয় নয়, অনুভূতিটাই আসল</small></span></div>
+    <div class="detail-actions">
+      <form class="reaction-form" method="post" action="{% url 'react' story.public_id %}" data-reaction-form>{% csrf_token %}<button name="kind" value="heart" type="submit" {% if "heart" in visitor_reactions %}disabled aria-label="ভালোবাসা জানিয়েছেন"{% else %}aria-label="ভালোবাসা জানান"{% endif %}>❤️ <span>{{ story.reaction_count }}</span></button><button name="kind" value="hug" type="submit" {% if "hug" in visitor_reactions %}disabled aria-label="সহমর্মিতা জানিয়েছেন"{% else %}aria-label="সহমর্মিতা জানান"{% endif %}>🫂</button><button name="kind" value="light" type="submit" {% if "light" in visitor_reactions %}disabled aria-label="আলো জানিয়েছেন"{% else %}aria-label="আলো জানান"{% endif %}>✨</button></form>
+      <a class="share-button" href="{{ facebook_share_url }}" target="_blank" rel="noopener noreferrer">f <span>শেয়ার</span></a><a class="share-button" href="{% url 'share-card' story.public_id %}" download>▧ <span>কার্ড</span></a>
+      <button class="text-button report-trigger" type="button" data-dialog-open="report-dialog">⚑ <span>রিপোর্ট</span></button>
+    </div>
+    <p class="reaction-feedback" data-reaction-feedback role="status" aria-live="polite"></p>
+  </article>
+  <div class="deletion-note"><div><b>এটি কি আপনার লেখা?</b><p>আপনার পরিচয় প্রমাণ বা প্রকাশ না করেই সরানোর অনুরোধ জানাতে পারেন।</p></div><button class="text-link" type="button" data-dialog-open="deletion-dialog">সরানোর অনুরোধ</button></div>
+</section>
+<dialog class="modal-dialog" id="report-dialog" aria-labelledby="report-title"><form method="post" action="{% url 'report' story.public_id %}">{% csrf_token %}<button class="modal-close" type="button" data-dialog-close aria-label="বন্ধ করুন">×</button><span class="eyebrow">কমিউনিটিকে নিরাপদ রাখুন</span><h2 id="report-title">গল্পটি রিপোর্ট করুন</h2><p>আমাদের মডারেশন টিম বিষয়টি পর্যালোচনা করবে।</p><div class="field-group"><label for="{{ report_form.reason.id_for_label }}">রিপোর্টের কারণ</label>{{ report_form.reason }}</div><div class="field-group"><label for="{{ report_form.details.id_for_label }}">আরও কিছু জানাতে চান? (ঐচ্ছিক)</label>{{ report_form.details }}</div><button class="button button-full" type="submit">নিরাপত্তা টিমকে জানান</button></form></dialog>
+<dialog class="modal-dialog" id="deletion-dialog" aria-labelledby="deletion-title"><form method="post" action="{% url 'deletion-request' %}">{% csrf_token %}{{ deletion_form.story_public_id }}{{ deletion_form.website }}<button class="modal-close" type="button" data-dialog-close aria-label="বন্ধ করুন">×</button><span class="eyebrow">আপনার লেখা, আপনার সিদ্ধান্ত</span><h2 id="deletion-title">সরানোর অনুরোধ পাঠান</h2><p>একজন মডারেটর যাচাই করে ব্যবস্থা নেবেন। পরিচয় বা ইমেইল প্রয়োজন নেই।</p><div class="field-group"><label for="{{ deletion_form.reason.id_for_label }}">কোনো নোট (ঐচ্ছিক)</label>{{ deletion_form.reason }}</div><button class="button button-full" type="submit">অনুরোধ পাঠান</button></form></dialog>
+{% endblock %}

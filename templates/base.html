@@ -1,0 +1,69 @@
+{% load static %}
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#21172f">
+  <meta name="description" content="{% block meta_description %}নাম নয়, অনুভূতিই আসল পরিচয়। নিরাপদে, নামহীনভাবে মনের কথা ভাগ করে নিন।{% endblock %}">
+  <meta property="og:site_name" content="মনেরকথা">
+  <meta property="og:locale" content="bn_BD">
+  {% block social_meta %}{% endblock %}
+  <title>{% block title %}মনেরকথা — নাম নয়, অনুভূতিই আসল পরিচয়।{% endblock %}</title>
+  <link rel="icon" href="{% static 'images/favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <script src="{% static 'js/site.js' %}" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">মূল কনটেন্টে যান</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="{% url 'home' %}" aria-label="মনেরকথা হোম">
+        <span class="brand-mark" aria-hidden="true">ম</span>
+        <span class="brand-name"><span class="brand-title">মনেরকথা<span class="brand-dot">.</span></span><small>নাম নয়, অনুভূতিই আসল পরিচয়।</small></span>
+      </a>
+      <nav class="desktop-nav" aria-label="প্রধান নেভিগেশন">
+        <a href="{% url 'home' %}">গল্পগুলো</a>
+        <a href="{% url 'about' %}">আমাদের কথা</a>
+        {% if user.is_staff %}
+        <a href="{% url 'moderation' %}">মডারেশন</a>
+        <a href="{% url 'analytics' %}">অ্যানালিটিক্স</a>
+        {% endif %}
+        <a class="button button-small" href="{% url 'submit-story' %}">গল্প লিখুন <span aria-hidden="true">↗</span></a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="ডার্ক থিম চালু বা বন্ধ করুন" title="থিম বদলান">◐</button>
+    </div>
+  </header>
+  {% if messages %}
+  <div class="message-stack" role="status" aria-live="polite">
+    {% for message in messages %}<div class="message message-{{ message.tags }}">{{ message }}</div>{% endfor %}
+  </div>
+  {% endif %}
+  <main id="main-content">{% block content %}{% endblock %}</main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div><a class="brand footer-brand" href="{% url 'home' %}"><span class="brand-mark" aria-hidden="true">ম</span><span class="brand-name"><span class="brand-title">মনেরকথা<span class="brand-dot">.</span></span></span></a><p>নাম নয়, অনুভূতিই আসল পরিচয়।</p><small>নিরাপদে বলুন। মন দিয়ে শুনুন।</small></div>
+      <nav class="footer-links" aria-label="তথ্য ও নীতিমালা">
+        <a href="{% url 'about' %}">আমাদের কথা</a>
+        <a href="{% url 'guidelines' %}">কমিউনিটি নির্দেশিকা</a>
+        <a href="{% url 'privacy' %}">গোপনীয়তা</a>
+        <a href="{% url 'contact' %}">যোগাযোগ</a>
+        {% if user.is_staff %}
+        <a href="{% url 'moderation' %}">মডারেশন ডেস্ক</a>
+        <a href="{% url 'analytics' %}">অ্যানালিটিক্স</a>
+        <a href="/django-admin/">অ্যাডমিন প্যানেল</a>
+        {% endif %}
+      </nav>
+      <p class="footer-note">আপনার পরিচয় নয়, অনুভূতিটাই এখানে গুরুত্বপূর্ণ।</p>
+    </div>
+  </footer>
+  <nav class="bottom-nav" aria-label="মোবাইল নেভিগেশন">
+    <a href="{% url 'home' %}" aria-label="হোম"><span aria-hidden="true">⌂</span><small>গল্প</small></a>
+    <a href="{% url 'submit-story' %}" aria-label="গল্প লিখুন"><span aria-hidden="true">＋</span><small>লিখুন</small></a>
+    <a href="{% url 'guidelines' %}" aria-label="নিরাপত্তা নির্দেশিকা"><span aria-hidden="true">♡</span><small>নিরাপত্তা</small></a>
+    {% if user.is_staff %}
+    <a href="{% url 'moderation' %}" aria-label="মডারেশন ডেস্ক"><span aria-hidden="true">🛡</span><small>মডারেশন</small></a>
+    {% endif %}
+  </nav>
+</body>
+</html>
