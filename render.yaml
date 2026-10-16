@@ -26,6 +26,7 @@ services:
   - type: keyvalue
     name: monerkotha-ratelimits
     plan: free
+    ipAllowList: []
     maxmemoryPolicy: allkeys-lru
 databases:
   - name: monerkotha-db
