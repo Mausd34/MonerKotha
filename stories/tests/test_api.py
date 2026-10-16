@@ -1,5 +1,6 @@
 import json
 
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -8,6 +9,7 @@ from stories.models import Category, DeletionRequest, Reaction, Report, Story
 
 class PublicApiTests(TestCase):
     def setUp(self):
+        cache.clear()
         self.category, _ = Category.objects.get_or_create(slug="life", defaults={"name": "জীবন"})
         Category.objects.update_or_create(
             slug="hidden",

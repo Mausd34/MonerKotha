@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.test import Client, RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -11,6 +12,7 @@ from stories.services import moderate_story
 
 class PublicViewTests(TestCase):
     def setUp(self):
+        cache.clear()
         self.category, _ = Category.objects.get_or_create(slug="life", defaults={"name": "জীবন"})
         self.pending = Story.objects.create(category=self.category, content="এটি অপেক্ষমাণ গল্পের নমুনা।", consent_given=True)
         self.approved = Story.objects.create(
@@ -62,6 +64,10 @@ class PublicViewTests(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Story.objects.filter(content="এটি নতুন একটি কাল্পনিক অনুভূতির গল্প।", status=Story.Status.PENDING).exists())
+
+    def test_submission_form_is_connected_to_story_api(self):
+        response = self.client.get(reverse("submit-story"))
+        self.assertContains(response, f'data-api-url="{reverse("api-story-create")}"')
 
     def test_submission_without_consent_does_not_save(self):
         self.client.post(

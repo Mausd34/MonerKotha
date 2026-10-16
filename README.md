@@ -107,6 +107,8 @@ Public JSON endpoints:
 
 Write endpoints require `Content-Type: application/json`, use the same form validation and rate limits as the website, and retain Django CSRF protection. They are intended for same-origin clients; cross-origin access is not enabled. Validation failures return HTTP 400 with an `error.fields` object; rate limits return HTTP 429. Only approved stories are exposed by read endpoints, and new submissions always enter the pending moderation queue.
 
+The story submission page sends submissions to `POST /api/stories/create/` when JavaScript is available and displays validation feedback without leaving the page. Its regular Django form post remains available when JavaScript is disabled.
+
 ## Moderation & abuse response
 
 `/community/moderation/` এবং `/community/analytics/` staff-only. Admin UI `/django-admin/`-এও approval/rejection bulk actions moderation log লেখে। Public pages কেবল `approved` story নেয়। Policy-তে doxxing, threats, targeted harassment, non-consensual intimate content, এবং targeted unverified harmful allegations নিষিদ্ধ; রিপোর্টে moderator `গল্প সরান` বা review করেছেন চিহ্নিত করতে পারেন। Automated regex কেবল contact details (email, URL, Bangladesh mobile format)-এর একটি subset আটকায়; এটি human review-এর বিকল্প নয়।

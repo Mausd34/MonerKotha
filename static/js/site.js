@@ -59,14 +59,107 @@
     });
   });
 
+  const submissionFeedback = document.querySelector("[data-submit-feedback]");
+  const clearSubmissionErrors = (form) => {
+    form.querySelectorAll("[data-field-errors]").forEach((container) => {
+      container.replaceChildren();
+      container.hidden = true;
+    });
+  };
+  const showSubmissionErrors = (form, fields) => {
+    let shown = false;
+    Object.entries(fields || {}).forEach(([name, errors]) => {
+      const container = form.querySelector(`[data-field-errors="${name}"]`);
+      if (!container) return;
+      const messages = Array.isArray(errors) ? errors : [errors];
+      messages.forEach((error) => {
+        const message = typeof error === "string" ? error : error.message;
+        if (!message) return;
+        const item = document.createElement("div");
+        item.textContent = message;
+        container.append(item);
+        shown = true;
+      });
+      container.hidden = container.childElementCount === 0;
+    });
+    return shown;
+  };
+
   document.querySelectorAll("form[data-loading-form]").forEach((form) => {
-    form.addEventListener("submit", () => {
+    form.addEventListener("submit", async (event) => {
       const button = form.querySelector("button[type='submit']");
+      if (!form.dataset.apiUrl) {
+        if (button) {
+          button.disabled = true;
+          button.setAttribute("aria-busy", "true");
+          button.dataset.originalText = button.textContent;
+          button.textContent = "জমা হচ্ছে…";
+        }
+        return;
+      }
+
+      event.preventDefault();
+      const originalButtonNodes = button
+        ? Array.from(button.childNodes, (node) => node.cloneNode(true))
+        : [];
       if (button) {
         button.disabled = true;
         button.setAttribute("aria-busy", "true");
-        button.dataset.originalText = button.textContent;
         button.textContent = "জমা হচ্ছে…";
+      }
+
+      if (submissionFeedback) {
+        submissionFeedback.hidden = true;
+        submissionFeedback.textContent = "";
+        submissionFeedback.classList.remove("message-error");
+        submissionFeedback.classList.add("message-success");
+      }
+      clearSubmissionErrors(form);
+      const showFeedback = (message, isError = false) => {
+        if (!submissionFeedback) return;
+        submissionFeedback.textContent = message;
+        submissionFeedback.classList.toggle("message-error", isError);
+        submissionFeedback.classList.toggle("message-success", !isError);
+        submissionFeedback.hidden = false;
+      };
+
+      try {
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        data.consent_given = form.elements.namedItem("consent_given").checked;
+        const response = await fetch(form.dataset.apiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+          },
+          body: JSON.stringify(data),
+          credentials: "same-origin",
+        });
+        const payload = await response.json();
+        if (!response.ok) {
+          const error = payload.error || {};
+          const hasFieldErrors = showSubmissionErrors(form, error.fields);
+          const message = response.status === 429
+            ? "এই ঘণ্টায় গল্প জমা দেওয়ার সীমা পূর্ণ হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।"
+            : hasFieldErrors
+              ? "গল্পটি জমা দেওয়া যায়নি। চিহ্নিত তথ্যগুলো ঠিক করে আবার চেষ্টা করুন।"
+              : "গল্পটি জমা দেওয়া যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।";
+          showFeedback(message, true);
+          return;
+        }
+
+        form.reset();
+        updateCount();
+        showFeedback("আপনার গল্পটি পেয়েছি। পর্যালোচনার পর উপযুক্ত হলে প্রকাশ করা হবে।");
+      } catch {
+        showFeedback("সার্ভারের সঙ্গে সংযোগ করা যায়নি। ইন্টারনেট পরীক্ষা করে আবার চেষ্টা করুন।", true);
+      } finally {
+        if (button) {
+          button.disabled = false;
+          button.removeAttribute("aria-busy");
+          button.replaceChildren(...originalButtonNodes);
+        }
       }
     });
   });
