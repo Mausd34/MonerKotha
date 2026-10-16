@@ -54,7 +54,7 @@ Copy-Item .env.example .env
 .\.venv\Scripts\python.exe manage.py runserver
 ```
 
-এরপর `http://127.0.0.1:8000/` খুলুন। Demo command কেবল স্পষ্টভাবে কাল্পনিক Bengali sample story তৈরি করে, সবগুলো **pending** রাখে। এগুলো প্রকাশ করতে `/django-admin/`-এ staff দিয়ে সাইন ইন করে গল্পগুলো অনুমোদন করুন। প্রতিটি public গল্পের detail পাতায় report, delete-request, reaction ও share-card দেখা যায়।
+এরপর `http://127.0.0.1:8000/` খুলুন। Demo command কেবল স্পষ্টভাবে কাল্পনিক Bengali sample story তৈরি করে, সবগুলো **pending** রাখে (সরাসরি অনুমোদিত করতে `seed_demo --approve` চালান)। এগুলো প্রকাশ করতে `/django-admin/`-এ staff দিয়ে সাইন ইন করে গল্পগুলো অনুমোদন করুন। প্রতিটি public গল্পের detail পাতায় report, delete-request, reaction ও share-card দেখা যায়।
 
 ### পরীক্ষা ও Django checks
 
